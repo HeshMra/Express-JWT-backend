@@ -5,7 +5,7 @@ const verifyToken = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-//save products(only admin can add products-authenticated and authorization)
+//save products(only admin can add products-authenticated and authorization both works)
 router.post('/add_product', verifyToken, async (req, res) => {
 
     if (req.user.role === 'admin') {
