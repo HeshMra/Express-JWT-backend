@@ -1,25 +1,32 @@
 const express = require('express');
 const Product = require('../models/Product');
+const verifyToken = require('../middlewares/authMiddleware');
 
 
 const router = express.Router();
 
-//save products
-router.post('/add_product', async (req, res) => {
-    try {
-        const product = await Product.create(req.body)
-        res.status(200).json(product);
+//save products(only admin can add products-authenticated and authorization)
+router.post('/add_product', verifyToken, async (req, res) => {
 
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ message: error.message })
+    if (req.user.role === 'admin') {
+        try {
+            const product = await Product.create(req.body)
+            res.status(200).json(product);
 
+        }
+        catch (error) {
+            console.log(error.message);
+            res.status(500).json({ message: error.message })
+
+        }
+    } else {
+        res.json({ message: 'Invalid user authentication' });
     }
 }
 )
 
-//getall products
-router.get('/all_product', async (req, res) => {
+//getall products (authenticated without authrization using veryfy token)
+router.get('/all_product', verifyToken, async (req, res) => {
     try {
         const product = await Product.find({});
         res.status(200).json(product);
@@ -30,8 +37,8 @@ router.get('/all_product', async (req, res) => {
     }
 })
 
-//getByid products
-router.get('/single_product/:id', async (req, res) => {
+//getByid products-authenticated
+router.get('/single_product/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const product = await Product.findById(id);
@@ -43,8 +50,8 @@ router.get('/single_product/:id', async (req, res) => {
     }
 })
 
-//update product
-router.put('/update_product/:id', async (req, res) => {
+//update product -authenticated
+router.put('/update_product/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const product = await Product.findByIdAndUpdate(id, req.body);
@@ -61,8 +68,8 @@ router.put('/update_product/:id', async (req, res) => {
     }
 })
 
-//Delete product
-router.delete('/delete_product/:id', async (req, res) => {
+//Delete product -authenticated
+router.delete('/delete_product/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const product = await Product.findByIdAndDelete(id);
