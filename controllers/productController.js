@@ -25,7 +25,7 @@ router.post('/add_product', verifyToken, async (req, res) => {
 }
 )
 
-//getall products (authenticated without authrization using veryfy token)
+//getall products (authenticated without authrization using 'verifyToken')
 router.get('/all_product', verifyToken, async (req, res) => {
     try {
         const product = await Product.find({});
@@ -54,6 +54,7 @@ router.get('/single_product/:id', verifyToken, async (req, res) => {
 router.put('/update_product/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
+        
         const product = await Product.findByIdAndUpdate(id, req.body);
         //we cannot find any prodcut in database
         if (!product) {
